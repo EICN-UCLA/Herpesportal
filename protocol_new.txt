@@ -81,21 +81,16 @@ removedup.py
 defocus calculation  
 defocus_calc.py
 
-19.Dont do this 
-padding particle
-pad_particles.sh
-relion_preprocess
+19.refine C5 structure
 
-20.refine C5 structure
-
-21.convert particle stack to images
+20.convert particle stack to images
 trim_portal.sh
 
-22.prepare extract portal star
+21.prepare extract portal star
 extractportal.py
 
 
-23.prepare micrographs.star
+22.prepare micrographs.star
 
 data_
 
@@ -108,12 +103,17 @@ _rlnVoltage #5
 _rlnAmplitudeContrast #6
 _rlnSphericalAberration #7
 _rlnGroupName #8
-cat particles_portal/*.star  | grep particle | awk '{print "particles_portal/"$2" "$3" "$4" "$5" "$6" "$7" "$8}' > micrographs.star
+cat particles_portal/*.star  | grep particle | awk '{print "particles_portal/"$2" "$3" "$4" "$5" "$6" "$7" "$8}' >> micrographs.star
 
-24.extract portal and phase flip
+23.extract portal and phase flip
 relion_preprocess --i micrographs.star --coord_suffix .star --coord_dir . --set_angpix 1.03 --extract --extract_size 192 --operate_out particles_portal --phase_flip
 
 24.prepare portal star from picked particles
 head -27 Particles/particles_portal/1000047_extract.star > particles_portal.star
 cat Particles/particles_portal/*.star | grep particles >> particlesre_portal.star
+
+25.classificationt the portal subparticle with C12 symmetry
+relion_refine_mpi --o /scratch/lytao/tmp1/Class3D/run1 --i particles_portal_expand.star  --particle_diameter 172 --angpix 1.076 --ref particles_portal_ref.mrc --firstiter_cc --ini_high 30  --flatten_solvent --zero_mask --strict_highres_exp 16  --ctf --ctf_phase_flipped --iter 50 --tau2_fudge 4 --K 5  --skip_align --sym c12 --norm --scale  --j 2 --dont_check_norm
+
+
 
